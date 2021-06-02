@@ -1,0 +1,19 @@
+{
+  "name": "@razor/app",
+  "private": true,
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  },
+  "workspaces": {
+    "packages": [
+      "web",
+      "server"
+    ]
+  },
+  "scripts": {
+    "server": "lerna exec --scope @razor/server -- yarn",
+    "web": "lerna exec --scope @razor/web -- yarn",
+    "start:server": "yarn server start",
+    "start:web": "yarn web start"
+  }
+}
