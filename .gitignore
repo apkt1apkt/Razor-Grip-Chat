@@ -4,6 +4,6 @@ coverage
 
 .vscode
 
-.env*
+.env*.local
 
 yarn-*
