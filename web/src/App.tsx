@@ -1,3 +1,9 @@
+import Layout from "@web/layout";
+
 export default function App() {
-  return <div>This is the app</div>;
+  return (
+    <div>
+      <Layout />
+    </div>
+  );
 }
