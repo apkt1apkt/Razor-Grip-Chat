@@ -1,0 +1,21 @@
+{
+  "short_name": "Razor Grip",
+  "name": "Razor Grip",
+  "description": "A chat app",
+  "icons": [
+    {
+      "src": "logo192.webp",
+      "type": "image/webp",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.webp",
+      "type": "image/webp",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#224C8B",
+  "background_color": "#224C8B"
+}
