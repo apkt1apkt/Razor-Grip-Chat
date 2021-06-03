@@ -23,6 +23,7 @@ export default function Drawer(props: DrawerProps) {
       variant="permanent"
       className={cx(classes.drawer, drawerPaper)}
       classes={{ paper: cx(drawerPaper) }}
+      elevation={0}
     >
       <div className={classes.toolbar}>
         {email && (
@@ -34,7 +35,7 @@ export default function Drawer(props: DrawerProps) {
           <DrawerIcon />
         </IconButton>
       </div>
-      <Divider />
+      <Divider className={classes.divider} />
       {children}
     </MaterialDrawer>
   );
@@ -68,15 +69,17 @@ const useStyles = makeStyles(({ transitions, breakpoints, spacing, mixins }) => 
     overflowX: "hidden",
     width: spacing(7) + 1,
     [breakpoints.up("sm")]: {
-      width: spacing(9),
+      width: spacing(9) + 1,
     },
   },
   toolbar: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-start",
-    paddingRight: 5,
-    paddingLeft: 10,
+    justifyContent: "flex-end",
+    padding: spacing(0, 1),
     ...mixins.toolbar,
+  },
+  divider: {
+    marginTop: -1,
   },
 }));

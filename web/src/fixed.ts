@@ -5,3 +5,5 @@ export const authDomain = REACT_APP_AUTH0_DOMAIN!;
 export const authClientId = REACT_APP_AUTH0_CLIENT_ID!;
 
 export const drawerWidth = 240;
+
+export const drawerMiniWidth = 73;

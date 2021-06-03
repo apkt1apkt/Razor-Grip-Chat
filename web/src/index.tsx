@@ -2,8 +2,9 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
 
 import App from "@web/App";
-import AuthProvider from "@web/auth/AuthProvider";
+import AuthProvider from "@web/providers/AuthProvider";
 import * as swr from "@web/serviceWorkerRegistration";
+import "@web/app.css";
 
 ReactDOM.render(
   <Router>

@@ -32,7 +32,7 @@ type AvatarProps = {
   alt: string;
 };
 
-const useStyles = makeStyles(({ palette: { background }, breakpoints, spacing, transitions }) => ({
+const useStyles = makeStyles(({ palette: { background }, breakpoints }) => ({
   root: {
     [breakpoints.down("xs")]: {
       marginLeft: -10,
