@@ -9,22 +9,24 @@ import useUsersOnline from "@web/hooks/useUsersOnline";
 
 export default function UsersOnline() {
   const usersOnline = useUsersOnline();
+  if (usersOnline.length < 1) return <div>There are no users Online</div>;
   return (
     <List>
-      {usersOnline.map((v) => (
-        <OneUserOnline key={v._id} name={v.name} img={v.img} />
-      ))}
+      {usersOnline.map((v, i) => {
+        const { name, _id, img } = v || {};
+        return <OneUserOnline key={_id || i} name={name} img={img} />;
+      })}
     </List>
   );
 }
 
 function OneUserOnline(props: OneUserOnlineProps) {
-  const { name, img } = props;
   const classes = useStyles();
+  const name = props.name || props.email || "...";
   return (
     <ListItem button className={classes.listItem}>
       <ListItemAvatar>
-        <Avatar alt={name} img={img} isOnline />
+        <Avatar alt={name} img={props.img!} isOnline />
       </ListItemAvatar>
       <ListItemText primary={name} primaryTypographyProps={{ noWrap: true }} />
     </ListItem>
@@ -44,6 +46,7 @@ const useStyles = makeStyles(({ spacing, transitions }) => ({
 }));
 
 type OneUserOnlineProps = {
-  name: string;
-  img?: string;
+  name?: string | null;
+  img?: string | null;
+  email?: string | null;
 };
