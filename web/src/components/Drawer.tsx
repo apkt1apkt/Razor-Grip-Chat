@@ -9,11 +9,13 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import DrawerIcon from "@material-ui/icons/ChevronLeft";
 
+import useUser from "@web/hooks/useUser";
 import { drawerWidth } from "@web/fixed";
 
 export default function Drawer(props: DrawerProps) {
-  const { drawerOpen, handleDrawerClose, email, children } = props;
+  const { drawerOpen, handleDrawerClose, children } = props;
   const classes = useStyles();
+  const { email } = useUser();
   const drawerPaper = {
     [classes.drawerOpen]: drawerOpen,
     [classes.drawerClose]: !drawerOpen,
@@ -45,7 +47,6 @@ export type DrawerProps = {
   children: React.ReactNode;
   drawerOpen: boolean;
   handleDrawerClose: VoidFunction;
-  email?: string;
 };
 
 const useStyles = makeStyles(({ transitions, breakpoints, spacing, mixins }) => ({

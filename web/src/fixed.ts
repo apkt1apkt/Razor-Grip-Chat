@@ -1,8 +1,6 @@
-const { REACT_APP_AUTH0_DOMAIN, REACT_APP_AUTH0_CLIENT_ID } = process.env;
+const { REACT_APP_AUTH0_AUDIENCE } = process.env;
 
-export const authDomain = REACT_APP_AUTH0_DOMAIN!;
-
-export const authClientId = REACT_APP_AUTH0_CLIENT_ID!;
+export const authAudience = REACT_APP_AUTH0_AUDIENCE!;
 
 export const drawerWidth = 240;
 

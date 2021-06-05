@@ -14,11 +14,13 @@ import MoreVertIcon from "@material-ui/icons/MoreVertOutlined";
 import IconTriggerMenu, { IconTriggerMenuProps } from "@web/components/IconTriggerMenu";
 import ThemeToggler from "@web/components/ThemeToggler";
 import { drawerWidth } from "@web/fixed";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Appbar(props: AppbarProps) {
   const { handleDrawerOpen, drawerOpen, menus } = props;
   const classes = useStyles();
-  const newMenus = [...(menus || []), { label: "Logout", Icon: ExitToAppIcon }];
+  const { logout } = useAuth0();
+  const newMenus = [...(menus || []), { label: "Logout", Icon: ExitToAppIcon, onClick: () => logout() }];
   return (
     <>
       <CssBaseline />
@@ -39,7 +41,7 @@ export default function Appbar(props: AppbarProps) {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap>
-              Mini variant drawer
+              Title goes here...
             </Typography>
           </div>
           <div>

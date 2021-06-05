@@ -41,7 +41,6 @@ const useStyles = makeStyles(({ spacing, mixins, transitions }) => ({
       easing: transitions.easing.sharp,
       duration: transitions.duration.leavingScreen,
     }),
-    backgroundColor: "red",
     marginLeft: drawerMiniWidth,
     backgroundSize: "cover",
     backgroundImage: "url(" + picture + ")",

@@ -2,11 +2,10 @@ import { Fragment, useEffect, useState } from "react";
 
 import ChatMessage from "@web/components/ChatMessage";
 import ChatPane from "@web/layout/ChatPane";
-import CustomTheme from "@web/providers/CustomTheme";
 import LeftPane from "@web/layout/LeftPane";
 import MainPane from "@web/layout/MainPane";
 
-import { useQuery, useSubscription, gql } from "@apollo/client";
+import { useQuery, useLazyQuery, gql } from "@apollo/client";
 
 const HELLO = gql`
   {
@@ -15,8 +14,8 @@ const HELLO = gql`
 `;
 
 const SUB = gql`
-  subscription HE {
-    helloCalled
+  subscription HE($b: String) {
+    helloCalled(b: $b)
   }
 `;
 
@@ -25,14 +24,20 @@ export default function Layout() {
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
   const [data, setData] = useState(new Array(10).fill(0));
-  const { data: helloData, error } = useQuery(HELLO, { fetchPolicy: "network-only" });
-  const { data: calledData } = useSubscription(SUB);
+  // const [getter, { data: helloData, error }] = useLazyQuery(HELLO, { fetchPolicy: "network-only" });
+  // const { data: helloData, error } = useQuery(HELLO, { fetchPolicy: "network-only" });
+  // const { data: calledData } = useSubscription(SUB, { variables: { b: "online" }, context: { mask: "jedi" } });
 
-  console.log(helloData);
+  // console.log(helloData);
+  // console.log(error?.message);
+
+  useEffect(() => {
+    // getter();
+  }, []);
 
   return (
-    <CustomTheme>
-      <LeftPane handleDrawerClose={handleDrawerClose} drawerOpen={open} email="tsatsuarnold@gmail.com" />
+    <>
+      <LeftPane handleDrawerClose={handleDrawerClose} drawerOpen={open} />
       <MainPane drawerOpen={open} handleDrawerOpen={handleDrawerOpen}>
         {/* <ChatPane>
           {data.map((v, i) => (
@@ -41,10 +46,11 @@ export default function Layout() {
             </Fragment>
           ))}
         </ChatPane> */}
+        {/* <button onClick={() => getter()}>Get</button> */}
 
-        {helloData?.hello}
-        <div>{calledData?.helloCalled}</div>
+        {/* {helloData?.hello} */}
+        {/* <div>{calledData?.helloCalled}</div> */}
       </MainPane>
-    </CustomTheme>
+    </>
   );
 }
