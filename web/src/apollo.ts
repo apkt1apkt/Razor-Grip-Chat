@@ -3,29 +3,30 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { setContext } from "@apollo/client/link/context";
 
-const TOKEN = "";
+const { REACT_APP_API_URI: httpUri, REACT_APP_API_SOCKET: socketUri } = process.env;
 
-const httpLink = createHttpLink({
-  uri: "http://localhost:4000/graphql",
-});
+const TOKEN = { token: "" };
+
+export const getAccessToken = () => TOKEN.token;
+
+export const setAccessToken = (token: string) => (TOKEN.token = `Bearer ${token}`);
+
+const httpLink = createHttpLink({ uri: httpUri });
+
+const authLink = setContext((_, { headers }) => ({
+  headers: {
+    ...headers,
+    authorization: getAccessToken(),
+  },
+}));
 
 const wsLink = new WebSocketLink({
-  uri: "ws://localhost:4000/socket",
+  uri: socketUri!,
   options: {
     reconnect: true,
-    connectionParams: {
-      authToken: TOKEN,
-    },
+    lazy: true,
+    connectionParams: async () => ({ "x-auth": getAccessToken() }),
   },
-});
-
-const authLink = setContext((_, { headers }) => {
-  return {
-    headers: {
-      ...headers,
-      authorization: TOKEN ? `Bearer ${TOKEN}` : "",
-    },
-  };
 });
 
 const splitLink = split(
