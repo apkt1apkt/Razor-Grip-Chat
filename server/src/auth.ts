@@ -12,7 +12,7 @@ const getKey: GetPublicKeyOrSecret = (header, callback) => {
   });
 };
 
-export const verify = (token?: string) => {
+export const verify = (token?: string): Promise<Obj | null> => {
   token = (token || "").split(" ")[1];
   return new Promise((resolve) => {
     if (!token) return resolve(null);

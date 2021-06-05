@@ -2,9 +2,10 @@ import merge from "lodash/merge";
 import { makeExecutableSchema } from "apollo-server-express";
 
 import rootTypedefs from "@server/apollo/root-typedefs";
-import rootResolvers from "@server/apollo/root-resolvers";
+import { ScalarTypedef, ScalarResolver } from "@server/apollo/scalar";
+import { typedefs, resolvers } from "@server/crud";
 
 export default makeExecutableSchema({
-  typeDefs: [rootTypedefs],
-  resolvers: merge(rootResolvers),
+  typeDefs: [rootTypedefs, ScalarTypedef, ...typedefs],
+  resolvers: merge(ScalarResolver, resolvers) as any,
 });

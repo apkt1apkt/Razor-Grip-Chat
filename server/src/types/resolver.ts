@@ -19,7 +19,7 @@ declare global {
     ) => TReturn;
 
     type Subscription = {
-      subscribe: () => any;
+      subscribe: Func;
     };
   }
 }

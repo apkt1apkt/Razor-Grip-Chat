@@ -5,13 +5,14 @@ import { ReadableError } from "@server/helpers/error";
 import { verify } from "@server/auth";
 
 const context = async (args: ContextArgs) => {
-  const { connection, req, res } = args;
+  const { connection, req } = args;
+
   let context = { uid: "" };
 
-  const { authorization: token } = req ? req.headers || {} : ({} as any);
-  const decoded = await verify(token);
-  if (decoded) {
-    console.log(decoded);
+  if (connection) context = { ...context, ...connection.context };
+  else {
+    const decoded = await verify(req?.headers.authorization);
+    if (decoded) context.uid = decoded.sub;
   }
 
   const authenticate = () => {
@@ -24,8 +25,7 @@ const context = async (args: ContextArgs) => {
 
   return {
     ...context,
-    req,
-    res,
+    isAuthenticated: !!context.uid,
     authenticate,
     throwUserOut,
   };
@@ -33,7 +33,7 @@ const context = async (args: ContextArgs) => {
 
 export default context;
 
-export type Context = ReturnType<typeof context>;
+export type Context = ResolvePromise<ReturnType<typeof context>>;
 
 type ContextArgs = {
   req?: Request;

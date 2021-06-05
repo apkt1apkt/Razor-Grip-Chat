@@ -1,9 +1,10 @@
-import { ApolloServer, concatenateTypeDefs } from "apollo-server-express";
+import { ApolloServer } from "apollo-server-express";
 
-import schema from "@server/apollo/schema";
-import formatError from "@server/apollo/format-error";
 import context from "@server/apollo/context";
-import { connection } from "mongoose";
+import formatError from "@server/apollo/format-error";
+import schema from "@server/apollo/schema";
+import { verify } from "@server/auth";
+import { userIsOnline } from "@server/crud/user";
 
 const apolloServer = new ApolloServer({
   schema,
@@ -23,11 +24,17 @@ const apolloServer = new ApolloServer({
 
   subscriptions: {
     path: "/socket",
-    onConnect: (connectionParams, webSocket, context) => {
-      console.log("connected");
+
+    onConnect: async (connectionParams) => {
+      const decoded = await verify((connectionParams as any)["x-auth"]);
+      const uid = decoded?.sub;
+      if (uid) userIsOnline(true, uid);
+      return { uid };
     },
-    onDisconnect: (webSocket, context) => {
-      console.log("disconnected");
+
+    onDisconnect: async (_, context) => {
+      const { uid } = await context.initPromise;
+      if (uid) userIsOnline(false, uid);
     },
   },
 });

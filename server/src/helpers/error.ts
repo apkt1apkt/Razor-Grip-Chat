@@ -14,6 +14,20 @@ export const ReadableError = (message: string, errInstance?: Error) => {
   return new ApolloError(message, ErrorCodes.App);
 };
 
+/**Wraps a function under an error handler */
+export const tryCatchWrap = async <T>(
+  func: () => Promise<T> | T,
+  onError?: (e?: Error) => Promise<void> | void
+): Promise<T | undefined> => {
+  try {
+    return await func();
+  } catch (e) {
+    if (onError) await onError(e);
+    logger.error(getLogMsg(e));
+  }
+  return;
+};
+
 export enum ErrorCodes {
   App = "APP",
 

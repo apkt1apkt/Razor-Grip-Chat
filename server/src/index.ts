@@ -7,6 +7,7 @@ import apolloServer from "@server/apollo";
 import logger, { logs } from "@server/logger";
 import routes from "@server/router";
 import { HOST_PORT } from "@server/fixed";
+import "@server/mongo";
 
 const server = express();
 

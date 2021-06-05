@@ -1,8 +1,6 @@
 const rootTypedefs = `
     type Query {
         _empty2: String
-
-        hello: String
     }
    
     type Mutation {
@@ -11,7 +9,6 @@ const rootTypedefs = `
    
     type Subscription{
         _empty2: String
-        helloCalled: Int
     }      
 `;
 
