@@ -1,1 +1,1 @@
-export type RedisChannels = "userOnlineStatusChanged" | "incomingMessage";
+export type RedisChannels = "userOnlineStatusChanged" | "incomingMessage" | "weConnectStatusChanged";

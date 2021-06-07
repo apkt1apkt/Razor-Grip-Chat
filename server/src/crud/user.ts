@@ -3,18 +3,39 @@ import { PUBLISH, SUBSCRIBE } from "@server/redis";
 import { tryCatchWrap } from "@server/helpers/error";
 
 export const userIsOnline = async (isOnline: boolean, _id: string) => {
-  const lastSeen = new Date();
-  const user = await tryCatchWrap(() =>
-    User.findOneAndUpdate({ _id }, { isOnline, lastSeen }, { upsert: true, new: true })
-  );
-  PUBLISH("userOnlineStatusChanged", { userOnlineStatusChanged: user || { _id, isOnline, lastSeen } });
+  tryCatchWrap(async () => {
+    const user = await User.findOneAndUpdate({ _id }, { isOnline, lastSeen: new Date() }, { upsert: true, new: true });
+    PUBLISH("userOnlineStatusChanged", { userOnlineStatusChanged: user });
+  });
+};
+
+const weConnect = (uid: string, user: IUser) => {
+  if (user._id === uid) return true;
+  return !(user.blockedByMe?.includes(uid) || user.blockedByOthers?.includes(uid));
 };
 
 export const UserResolver: Resolver.Resolvers<IUser> = {
   Query: {
     usersOnline: (_, __, { authenticate, uid }) => {
       authenticate();
-      return User.find({ isOnline: true, _id: { $ne: uid } }).lean();
+      return User.find({
+        isOnline: true,
+        _id: { $ne: uid },
+        blockedByOthers: { $ne: uid },
+        blockedByMe: { $ne: uid },
+      }).lean();
+    },
+
+    myBlacklist: async (_, __, { authenticate, uid }) => {
+      authenticate();
+      const user = await User.findOne({ _id: uid }, { blockedByMe: 1 }).lean();
+      const blacklist = user?.blockedByMe || [];
+      if (blacklist.length) return User.find({ _id: { $in: blacklist } }).lean();
+    },
+
+    me: (_, __, { authenticate, uid }) => {
+      authenticate();
+      return User.findOne({ _id: uid }).lean();
     },
   },
 
@@ -24,13 +45,42 @@ export const UserResolver: Resolver.Resolvers<IUser> = {
       const user = await User.findOneAndUpdate({ _id: uid }, { ...body }, { upsert: true, new: true });
       return user;
     },
+
+    blockUser: async (_, { userId }, { authenticate, uid }) => {
+      authenticate();
+      const u1 = await User.findOneAndUpdate({ _id: uid }, { $push: { blockedByMe: userId } }, { new: true });
+      const u2 = await User.findOneAndUpdate({ _id: userId }, { $push: { blockedByOthers: uid } }, { new: true });
+      const result = [u1, u2];
+      PUBLISH("weConnectStatusChanged", { weConnectStatusChanged: result });
+      return result;
+    },
+
+    unblockUser: async (_, { userId }, { authenticate, uid }) => {
+      authenticate();
+      const u1 = await User.findOneAndUpdate({ _id: uid }, { $pull: { blockedByMe: userId } }, { new: true });
+      const u2 = await User.findOneAndUpdate({ _id: userId }, { $pull: { blockedByOthers: uid } }, { new: true });
+      const result = [u1, u2];
+      PUBLISH("weConnectStatusChanged", { weConnectStatusChanged: result });
+      return result;
+    },
   },
 
   Subscription: {
-    userOnlineStatusChanged: SUBSCRIBE("userOnlineStatusChanged", (payload, __, { uid, isAuthenticated }) => {
+    userOnlineStatusChanged: SUBSCRIBE("userOnlineStatusChanged", (_, __, { uid, isAuthenticated }) => {
       if (!isAuthenticated) return false;
-      return payload.userOnlineStatusChanged?._id !== uid;
+      const payload: IUser = _.userOnlineStatusChanged || {};
+      return payload._id !== uid && weConnect(uid, payload);
     }),
+
+    weConnectStatusChanged: SUBSCRIBE("weConnectStatusChanged", (_, __, { uid, isAuthenticated }) => {
+      if (!isAuthenticated) return false;
+      const [payload1, payload2]: IUser[] = _.weConnectStatusChanged || [];
+      return payload1?._id === uid || payload2?._id === uid;
+    }),
+  },
+
+  User: {
+    weConnect: (user, _, { uid }) => weConnect(uid, user),
   },
 };
 
@@ -42,6 +92,8 @@ export const UserTypedef = `
     img: String
     name: String
     email: String
+    weConnect: Boolean
+    blockedByMe: [String]
   }
 
   input UserInput {
@@ -52,13 +104,18 @@ export const UserTypedef = `
 
   extend type Query {
     usersOnline: [User]
+    myBlacklist: [User]
+    me: User
   }
 
   extend type Mutation {
     updateMe(body:UserInput!): User
+    blockUser(userId:String!): [User]
+    unblockUser(userId:String!): [User]
   }
 
   extend type Subscription {
     userOnlineStatusChanged: User  
+    weConnectStatusChanged: [User]
   }
 `;

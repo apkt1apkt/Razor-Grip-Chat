@@ -1,11 +1,24 @@
 import { IChat, Chat, getThreadId } from "@server/model/chat";
+import { User } from "@server/model/user";
 import { PUBLISH, SUBSCRIBE } from "@server/redis";
+
+const getFriendFromThread = (uid: string, thread: string) => {
+  const [idOne, idTwo] = thread.split(":");
+  return uid === idOne ? idTwo : idOne;
+};
 
 export const ChatResolver: Resolver.Resolvers<IChat> = {
   Query: {
-    messages: (_, { recipient }, { uid, authenticate }) => {
+    chatThread: async (_, { recipient }, { uid, authenticate }) => {
       authenticate();
-      return Chat.find({ thread: getThreadId(recipient, uid) });
+      return Chat.find({ thread: getThreadId(recipient, uid) }).lean();
+    },
+
+    recentChats: async (_, __, { uid, authenticate }) => {
+      authenticate();
+      const chatThreads = await Chat.distinct("thread", { $or: [{ recipient: uid }, { sender: uid }] });
+      const chatHeads = chatThreads.map((v) => getFriendFromThread(uid, v));
+      return User.find({ _id: { $in: chatHeads } }).lean();
     },
   },
 
@@ -22,7 +35,7 @@ export const ChatResolver: Resolver.Resolvers<IChat> = {
     incomingMessage: SUBSCRIBE("incomingMessage", (payload, { sender }, { uid, isAuthenticated }) => {
       if (!isAuthenticated) return false;
       const chat: IChat = payload.incomingMessage || {};
-      return chat.recipient === uid && chat.thread === getThreadId(uid, sender);
+      return chat.thread === getThreadId(uid, sender);
     }),
   },
 
@@ -40,10 +53,12 @@ export const ChatTypedef = `
         isMine: Boolean
         thread: String
         createdAt: DateTime
+        _isOptimistic: Boolean
     }
 
     extend type Query {
-        messages(recipient:String!): [Chat]
+        chatThread(recipient:String!): [Chat]
+        recentChats: [User]
     }
 
     extend type Mutation {
