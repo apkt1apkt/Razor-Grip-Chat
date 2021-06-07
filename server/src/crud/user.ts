@@ -37,6 +37,11 @@ export const UserResolver: Resolver.Resolvers<IUser> = {
       authenticate();
       return User.findOne({ _id: uid }).lean();
     },
+
+    user: (_, { userId }, { authenticate }) => {
+      authenticate();
+      return User.findOne({ _id: userId }).lean();
+    },
   },
 
   Mutation: {
@@ -106,6 +111,7 @@ export const UserTypedef = `
     usersOnline: [User]
     myBlacklist: [User]
     me: User
+    user(userId:String!): User
   }
 
   extend type Mutation {

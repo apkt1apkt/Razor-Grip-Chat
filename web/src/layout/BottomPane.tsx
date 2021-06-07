@@ -1,35 +1,51 @@
 import cx from "clsx";
+import { useReactiveVar } from "@apollo/client";
 
 import IconButton from "@material-ui/core/IconButton";
 import Input from "@material-ui/core/OutlinedInput";
 import { makeStyles, fade } from "@material-ui/core/styles";
 
-import EmojiIcon from "@material-ui/icons/InsertEmoticon";
+import HomeIcon from "@material-ui/icons/Home";
 import SendIcon from "@material-ui/icons/Send";
 
+import useChatComposer from "@web/hooks/useChatComposer";
 import { drawerMiniWidth, drawerWidth } from "@web/fixed";
+import { drawerOpenVar, recipientVar } from "@web/reactive";
 
-export default function BottomPane(props: BottomPaneProps) {
-  const { drawerOpen } = props;
+export default function BottomPane() {
   const classes = useStyles();
+
+  const { message, onSendMessage, onTypeMessage, weConnect } = useChatComposer();
+
+  const drawerOpen = useReactiveVar(drawerOpenVar);
+
+  const goHome = () => recipientVar("");
+
   return (
     <div className={cx(classes.bottom, { [classes.bottomShift]: drawerOpen })}>
-      <IconButton className={classes.iconButton}>
-        <EmojiIcon className={classes.icon} />
+      <IconButton className={classes.iconButton} onClick={goHome}>
+        <HomeIcon className={classes.icon} />
       </IconButton>
       <div className={classes.inputContainer}>
-        <Input fullWidth margin="dense" placeholder="Type a message" />
+        <form onSubmit={onSendMessage}>
+          <Input
+            value={weConnect ? message : ""}
+            onChange={onTypeMessage}
+            disabled={!weConnect}
+            fullWidth
+            margin="dense"
+            placeholder={weConnect ? "Type a message" : "Sorry!, you cannot chat this user"}
+          />
+        </form>
       </div>
-      <IconButton className={classes.iconButton}>
-        <SendIcon className={classes.icon} />
-      </IconButton>
+      {weConnect && (
+        <IconButton onClick={onSendMessage} className={classes.iconButton}>
+          <SendIcon className={classes.icon} />
+        </IconButton>
+      )}
     </div>
   );
 }
-
-type BottomPaneProps = {
-  drawerOpen: boolean;
-};
 
 const useStyles = makeStyles(({ palette: { background, primary, text }, zIndex, transitions }) => ({
   bottom: {
