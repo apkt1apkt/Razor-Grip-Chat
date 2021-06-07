@@ -1,4 +1,5 @@
 import cx from "clsx";
+import { useReactiveVar } from "@apollo/client";
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 import IconButton from "@material-ui/core/IconButton";
@@ -7,60 +8,52 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 
-import ExitToAppIcon from "@material-ui/icons/ExitToAppOutlined";
 import MenuIcon from "@material-ui/icons/Menu";
-import MoreVertIcon from "@material-ui/icons/MoreVertOutlined";
 
-import IconTriggerMenu, { IconTriggerMenuProps } from "@web/components/IconTriggerMenu";
-import ThemeToggler from "@web/components/ThemeToggler";
+import BlockUserButton from "@web/components/icon-button/BlockUserButton";
+import LogoutButton from "@web/components/icon-button/LogoutButton";
+import ToggleThemeButton from "@web/components/icon-button/ToggleThemeButton";
+import { drawerOpenVar, appbarTitleVar } from "@web/reactive";
 import { drawerWidth } from "@web/fixed";
-import { useAuth0 } from "@auth0/auth0-react";
 
-export default function Appbar(props: AppbarProps) {
-  const { handleDrawerOpen, drawerOpen, menus } = props;
+export default function Appbar() {
   const classes = useStyles();
-  const { logout } = useAuth0();
-  const newMenus = [...(menus || []), { label: "Logout", Icon: ExitToAppIcon, onClick: () => logout() }];
+  const drawerOpen = useReactiveVar(drawerOpenVar);
+  const appbarTitle = useReactiveVar(appbarTitleVar);
+  const handleDrawerOpen = () => drawerOpenVar(true);
   return (
     <>
       <CssBaseline />
       <MaterialAppBar
-        elevation={0}
+        elevation={1}
         position="fixed"
         className={cx(classes.appBar, { [classes.appBarShift]: drawerOpen })}
       >
         <Toolbar className={classes.toolbar}>
           <div>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              className={cx(classes.menuButton, { [classes.hide]: drawerOpen })}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap>
-              Title goes here...
-            </Typography>
+            {!drawerOpen && (
+              <IconButton onClick={handleDrawerOpen} edge="start" className={classes.menuButton}>
+                <MenuIcon />
+              </IconButton>
+            )}
+            {typeof appbarTitle === "string" ? (
+              <Typography variant="h6" noWrap>
+                {appbarTitle}
+              </Typography>
+            ) : (
+              appbarTitle
+            )}
           </div>
           <div>
-            <ThemeToggler />
-            <IconTriggerMenu menus={newMenus} id="appbar-more">
-              <MoreVertIcon />
-            </IconTriggerMenu>
+            <BlockUserButton />
+            <ToggleThemeButton />
+            <LogoutButton />
           </div>
         </Toolbar>
       </MaterialAppBar>
     </>
   );
 }
-
-export type AppbarProps = {
-  drawerOpen: boolean;
-  handleDrawerOpen: VoidFunction;
-  menus?: IconTriggerMenuProps["menus"];
-};
 
 const useStyles = makeStyles(({ transitions, zIndex, palette: { background, text } }) => ({
   appBar: {
@@ -82,9 +75,6 @@ const useStyles = makeStyles(({ transitions, zIndex, palette: { background, text
   },
   menuButton: {
     marginRight: 36,
-  },
-  hide: {
-    display: "none",
   },
   toolbar: {
     display: "flex",

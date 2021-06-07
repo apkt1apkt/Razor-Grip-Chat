@@ -1,4 +1,5 @@
 import cx from "clsx";
+import { useReactiveVar } from "@apollo/client";
 
 import Divider from "@material-ui/core/Divider";
 import MaterialDrawer from "@material-ui/core/Drawer";
@@ -9,13 +10,15 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import DrawerIcon from "@material-ui/icons/ChevronLeft";
 
-import useUser from "@web/hooks/useUser";
+import useMe from "@web/hooks/useMe";
 import { drawerWidth } from "@web/fixed";
+import { drawerOpenVar } from "@web/reactive";
 
 export default function Drawer(props: DrawerProps) {
-  const { drawerOpen, handleDrawerClose, children } = props;
+  const { email } = useMe();
   const classes = useStyles();
-  const { email } = useUser();
+  const drawerOpen = useReactiveVar(drawerOpenVar);
+  const handleDrawerClose = () => drawerOpenVar(false);
   const drawerPaper = {
     [classes.drawerOpen]: drawerOpen,
     [classes.drawerClose]: !drawerOpen,
@@ -38,16 +41,12 @@ export default function Drawer(props: DrawerProps) {
         </IconButton>
       </div>
       <Divider className={classes.divider} />
-      {children}
+      {props.children}
     </MaterialDrawer>
   );
 }
 
-export type DrawerProps = {
-  children: React.ReactNode;
-  drawerOpen: boolean;
-  handleDrawerClose: VoidFunction;
-};
+export type DrawerProps = { children: React.ReactNode };
 
 const useStyles = makeStyles(({ transitions, breakpoints, spacing, mixins }) => ({
   drawer: {
