@@ -5,6 +5,8 @@ declare global {
 
   type Obj<T = any> = { [x: string]: T };
 
+  type QueryResult<accessor extends string, T> = Data.O<{ readonly [P in accessor]: T }>;
+
   namespace Web {
     type Icon = SvgIconComponent;
   }

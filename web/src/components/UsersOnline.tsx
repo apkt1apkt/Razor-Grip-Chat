@@ -1,52 +1,32 @@
+import { useReactiveVar } from "@apollo/client";
+import { memo } from "react";
+
 import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import { makeStyles } from "@material-ui/core/styles";
 
-import Avatar from "@web/components/Avatar";
+import UserListItem from "@web/components/UserListItem";
 import useUsersOnline from "@web/hooks/useUsersOnline";
+import { recipientVar } from "@web/reactive";
 
-export default function UsersOnline() {
+function UsersOnline() {
   const usersOnline = useUsersOnline();
-  if (usersOnline.length < 1) return <div>There are no users Online</div>;
+
+  const recipient = useReactiveVar(recipientVar);
+
+  const onSelectRecipient = (selectedId?: Nullable<string>) => () => {
+    if (recipient !== selectedId) recipientVar(selectedId);
+    else recipientVar("");
+  };
+
+  if (usersOnline.length < 1) return <></>;
+
   return (
     <List>
-      {usersOnline.map((v, i) => {
-        const { name, _id, img } = v || {};
-        return <OneUserOnline key={_id || i} name={name} img={img} />;
+      {usersOnline.map((v) => {
+        if (!v?.weConnect) return "";
+        return <UserListItem key={v?._id} {...v} isOnline onClick={onSelectRecipient(v?._id)} />;
       })}
     </List>
   );
 }
 
-function OneUserOnline(props: OneUserOnlineProps) {
-  const classes = useStyles();
-  const name = props.name || props.email || "...";
-  return (
-    <ListItem button className={classes.listItem}>
-      <ListItemAvatar>
-        <Avatar alt={name} img={props.img!} isOnline />
-      </ListItemAvatar>
-      <ListItemText primary={name} primaryTypographyProps={{ noWrap: true }} />
-    </ListItem>
-  );
-}
-
-const useStyles = makeStyles(({ spacing, transitions }) => ({
-  listItem: {
-    "&:hover": {
-      "& .MuiAvatar-root": {
-        width: spacing(6),
-        height: spacing(6),
-        transition: transitions.create(["width", "height"]),
-      },
-    },
-  },
-}));
-
-type OneUserOnlineProps = {
-  name?: string | null;
-  img?: string | null;
-  email?: string | null;
-};
+export default memo(UsersOnline);

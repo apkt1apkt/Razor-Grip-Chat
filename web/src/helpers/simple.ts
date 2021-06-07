@@ -2,6 +2,14 @@ import { v1 } from "uuid";
 
 export const getUniqueId = () => v1();
 
+export const tryParse = (body: any) => {
+  try {
+    return JSON.parse(body);
+  } catch (e) {
+    return null;
+  }
+};
+
 export const setMetaThemeColor = async (color: string, defColor?: string) => {
   await waitFor(20);
   if (defColor) defaultMTC.color = defColor;

@@ -1,37 +1,51 @@
 import { useQuery, gql } from "@apollo/client";
 import { useEffect } from "react";
 
+import { userPayload, User } from "@web/payload";
+import useMe from "@web/hooks/useMe";
+
 export default function useUsersOnline() {
-  const { data, subscribeToMore } = useQuery<{ usersOnline: UsersOnline }>(USERS_ONLINE);
+  const { _id: myId } = useMe();
+  const { data, subscribeToMore } = useQuery<UsersOnline>(USERS_ONLINE);
 
   useEffect(() => {
     const unsubscribe = subscribeToMore({
       document: USER_ONLINE_STATUS_CHANGED,
       updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData) return prev;
         const user: User = (subscriptionData.data as any)?.userOnlineStatusChanged;
-        if (user) {
-          const usersOnline = prev.usersOnline || [];
-          const modifiedUsersOnline = usersOnline.filter((v) => v?._id !== user._id);
-          if (user.isOnline)
-            return {
-              ...prev,
-              usersOnline: [user, ...modifiedUsersOnline],
-            };
-          return { ...prev, usersOnline: modifiedUsersOnline };
-        }
-        return prev;
+        return modifyUsersOnlineCache(user, prev);
+      },
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [subscribeToMore]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToMore({
+      document: WE_CONNECT_STATUS_CHANGED,
+      updateQuery: (prev, { subscriptionData }) => {
+        const weConnectUsers: User[] = (subscriptionData.data as any)?.weConnectStatusChanged;
+        const user = weConnectUsers?.find((v) => v?._id !== myId);
+        return modifyUsersOnlineCache(user, prev);
       },
     });
     return () => {
       unsubscribe();
     };
-  });
+  }, [subscribeToMore, myId]);
 
   return data?.usersOnline || [];
 }
 
-const userPayload = "_id name img email isOnline lastSeen";
+const modifyUsersOnlineCache = (user: Nullable<User>, prev: UsersOnline) => {
+  if (!user) return prev;
+  const usersOnline = prev?.usersOnline || [];
+  const modifiedUsersOnline = usersOnline.filter((v) => v?._id !== user._id);
+  if (user.isOnline && user.weConnect) return { ...prev, usersOnline: [user, ...modifiedUsersOnline] };
+  return { ...prev, usersOnline: modifiedUsersOnline };
+};
 
 const USERS_ONLINE = gql`
   {
@@ -49,6 +63,12 @@ const USER_ONLINE_STATUS_CHANGED = gql`
   }
 `;
 
-type User = { _id: string; name: string; img: string; isOnline: boolean; lastSeen: boolean; email: string };
+const WE_CONNECT_STATUS_CHANGED = gql`
+  subscription WeConnectStatusChanged {
+    weConnectStatusChanged {
+     ${userPayload}
+    }
+  }
+`;
 
-type UsersOnline = Data.O<User[]>;
+type UsersOnline = QueryResult<"usersOnline", User[]>;
