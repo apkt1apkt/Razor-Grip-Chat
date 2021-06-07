@@ -8,14 +8,13 @@ export type Chat = {
   _isOptimistic: boolean;
 };
 
-export const userPayload = "_id name img email isOnline lastSeen weConnect";
+export const userPayload = "_id name img email isOnline weConnect";
 
 export type User = {
   _id: string;
   name: string;
   img: string;
   isOnline: boolean;
-  lastSeen: boolean;
   email: string;
   weConnect: boolean;
 };

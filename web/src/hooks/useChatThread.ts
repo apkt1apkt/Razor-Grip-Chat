@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
 
-import { Chat, chatPayload } from "@web/payload";
+import { Chat, chatPayload, userPayload, User } from "@web/payload";
 import { recipientVar } from "@web/reactive";
 
 export default function useChatThread() {
@@ -10,6 +10,15 @@ export default function useChatThread() {
     variables: { recipient },
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
+    skip: !recipient,
+  });
+
+  const { data: userData } = useQuery<QueryResult<"user", User>>(USER, {
+    variables: { userId: recipient },
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+    skip: !recipient,
+    returnPartialData: true,
   });
 
   useEffect(() => {
@@ -28,9 +37,7 @@ export default function useChatThread() {
     };
   }, [subscribeToMore, recipient]);
 
-  const chatThread = data?.chatThread || [];
-
-  return { chatThread };
+  return { chatThread: data?.chatThread || [], recipientData: userData?.user || {} };
 }
 
 export const CHAT_THREAD = gql`
@@ -45,6 +52,14 @@ const INCOMING_MESSAGE = gql`
   subscription IncomingMessage($sender:String!){
     incomingMessage(sender:$sender){
       ${chatPayload}
+    }
+  }
+`;
+
+const USER = gql`
+  query User($userId: String!) {
+    user(userId: $userId) {
+        ${userPayload}
     }
   }
 `;

@@ -2,13 +2,20 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import ChatMessage from "@web/components/ChatMessage";
 import Page from "@web/components/Page";
+import UserListItem from "@web/components/UserListItem";
 import useChatThread from "@web/hooks/useChatThread";
 
 export default function ChatPage() {
   const classes = useStyles();
-  const { chatThread } = useChatThread();
+  const { chatThread, recipientData } = useChatThread();
   return (
-    <Page title="Chat page">
+    <Page
+      title={
+        <div className={classes.title}>
+          <UserListItem {...recipientData} />
+        </div>
+      }
+    >
       <div className={classes.chatContainer}>
         <div className={classes.chat}>
           {chatThread.map((v) => (
@@ -20,7 +27,7 @@ export default function ChatPage() {
   );
 }
 
-const useStyles = makeStyles(({ palette: { background, type, info } }) => ({
+const useStyles = makeStyles(({ palette: { background, type, info }, breakpoints }) => ({
   chatContainer: {
     padding: "15px 30px",
     margin: "0 auto",
@@ -40,5 +47,11 @@ const useStyles = makeStyles(({ palette: { background, type, info } }) => ({
     display: "flex",
     flexDirection: "column-reverse",
     justifyContent: "flex-end",
+  },
+  title: {
+    marginLeft: -25,
+    [breakpoints.down("xs")]: {
+      marginLeft: -15,
+    },
   },
 }));

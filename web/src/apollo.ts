@@ -40,5 +40,18 @@ const splitLink = split(
 
 export default new ApolloClient({
   link: splitLink,
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          user(_, { args, toReference }) {
+            return toReference({
+              __typename: "User",
+              id: args?.userId,
+            });
+          },
+        },
+      },
+    },
+  }),
 });

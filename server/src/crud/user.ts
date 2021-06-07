@@ -1,6 +1,7 @@
 import { User, IUser } from "@server/model/user";
 import { PUBLISH, SUBSCRIBE } from "@server/redis";
 import { tryCatchWrap } from "@server/helpers/error";
+import { waitFor } from "@server/helpers/simple";
 
 export const userIsOnline = async (isOnline: boolean, _id: string) => {
   tryCatchWrap(async () => {
@@ -38,8 +39,9 @@ export const UserResolver: Resolver.Resolvers<IUser> = {
       return User.findOne({ _id: uid }).lean();
     },
 
-    user: (_, { userId }, { authenticate }) => {
+    user: async (_, { userId }, { authenticate }) => {
       authenticate();
+      await waitFor(3000);
       return User.findOne({ _id: userId }).lean();
     },
   },

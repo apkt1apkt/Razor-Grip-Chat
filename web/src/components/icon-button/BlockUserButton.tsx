@@ -29,9 +29,7 @@ function BlockUserButton() {
 
   return (
     <Tooltip title="Block this user">
-      <IconButton color="secondary" onClick={handleClick}>
-        {showBlock ? <BlockIcon /> : <UnblockIcon />}
-      </IconButton>
+      <IconButton onClick={handleClick}>{showBlock ? <BlockIcon /> : <UnblockIcon />}</IconButton>
     </Tooltip>
   );
 }

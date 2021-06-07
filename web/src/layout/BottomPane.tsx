@@ -23,7 +23,7 @@ export default function BottomPane() {
 
   return (
     <div className={cx(classes.bottom, { [classes.bottomShift]: drawerOpen })}>
-      <IconButton className={classes.iconButton} onClick={goHome}>
+      <IconButton className={classes.iconButton} color="primary" onClick={goHome}>
         <HomeIcon className={classes.icon} />
       </IconButton>
       <div className={classes.inputContainer}>
@@ -76,7 +76,6 @@ const useStyles = makeStyles(({ palette: { background, primary, text }, zIndex, 
     fontSize: 30,
   },
   iconButton: {
-    color: "inherit",
     marginRight: 10,
   },
   inputContainer: {

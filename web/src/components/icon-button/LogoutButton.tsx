@@ -11,7 +11,7 @@ function LogoutButton() {
   const handleLogout = () => logout();
   return (
     <Tooltip title="Logout">
-      <IconButton onClick={handleLogout} color="secondary">
+      <IconButton onClick={handleLogout}>
         <LogoutIcon />
       </IconButton>
     </Tooltip>
