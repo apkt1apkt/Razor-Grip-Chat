@@ -1,56 +1,80 @@
-import { Fragment, useEffect, useState } from "react";
+import cx from "clsx";
+import { Switch, Route, Redirect } from "react-router-dom";
+import { lazy, Suspense } from "react";
 
-import ChatMessage from "@web/components/ChatMessage";
-import ChatPane from "@web/layout/ChatPane";
-import LeftPane from "@web/layout/LeftPane";
-import MainPane from "@web/layout/MainPane";
+import { makeStyles } from "@material-ui/core/styles";
 
-import { useQuery, useLazyQuery, gql } from "@apollo/client";
+import Appbar from "@web/components/Appbar";
+import Drawer from "@web/components/Drawer";
+import HomePage from "@web/pages/HomePage";
+import UsersOnline from "@web/components/UsersOnline";
+import { drawerMiniWidth, drawerWidth } from "@web/fixed";
+import { useReactiveVar } from "@apollo/client";
+import { drawerOpenVar, recipientVar } from "@web/reactive";
 
-const HELLO = gql`
-  {
-    hello
-  }
-`;
-
-const SUB = gql`
-  subscription HE($b: String) {
-    helloCalled(b: $b)
-  }
-`;
+const RecentChatsPage = lazy(() => import("@web/pages/RecentChatsPage"));
+const BlockedUsersPage = lazy(() => import("@web/pages/BlockedUsersPage"));
+const ChatPage = lazy(() => import("@web/pages/ChatPage"));
+const BottomPane = lazy(() => import("@web/layout/BottomPane"));
 
 export default function Layout() {
-  const [open, setOpen] = useState(true);
-  const handleDrawerOpen = () => setOpen(true);
-  const handleDrawerClose = () => setOpen(false);
-  const [data, setData] = useState(new Array(10).fill(0));
-  // const [getter, { data: helloData, error }] = useLazyQuery(HELLO, { fetchPolicy: "network-only" });
-  // const { data: helloData, error } = useQuery(HELLO, { fetchPolicy: "network-only" });
-  // const { data: calledData } = useSubscription(SUB, { variables: { b: "online" }, context: { mask: "jedi" } });
-
-  // console.log(helloData);
-  // console.log(error?.message);
-
-  useEffect(() => {
-    // getter();
-  }, []);
+  const classes = useStyles();
+  const drawerOpen = useReactiveVar(drawerOpenVar);
+  const recipient = useReactiveVar(recipientVar);
 
   return (
     <>
-      <LeftPane handleDrawerClose={handleDrawerClose} drawerOpen={open} />
-      <MainPane drawerOpen={open} handleDrawerOpen={handleDrawerOpen}>
-        {/* <ChatPane>
-          {data.map((v, i) => (
-            <Fragment key={i}>
-              <ChatMessage message={"Message: " + (i + 1)} mine={i % 2 === 0} date={new Date()} />
-            </Fragment>
-          ))}
-        </ChatPane> */}
-        {/* <button onClick={() => getter()}>Get</button> */}
-
-        {/* {helloData?.hello} */}
-        {/* <div>{calledData?.helloCalled}</div> */}
-      </MainPane>
+      <Appbar />
+      <Drawer>
+        <UsersOnline />
+      </Drawer>
+      <main>
+        <div className={classes.toolbar} />
+        <div className={cx(classes.children, { [classes.childrenShift]: drawerOpen })}>
+          <Suspense fallback={<></>}>
+            {recipient && (
+              <>
+                <ChatPage />
+                <Redirect from="/*" to="/" />
+              </>
+            )}
+            {!recipient && (
+              <Switch>
+                <Route path="/recent" component={RecentChatsPage} />
+                <Route path="/blocked" component={BlockedUsersPage} />
+                <Route path="/" component={HomePage} />
+              </Switch>
+            )}
+          </Suspense>
+        </div>
+        <Suspense fallback={<></>}>{recipient && <BottomPane />}</Suspense>
+      </main>
     </>
   );
 }
+
+const useStyles = makeStyles(({ spacing, mixins, transitions }) => ({
+  toolbar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    padding: spacing(0, 1),
+    ...mixins.toolbar,
+  },
+  children: {
+    width: `calc(100% - ${drawerMiniWidth}px)`,
+    transition: transitions.create(["width", "margin"], {
+      easing: transitions.easing.sharp,
+      duration: transitions.duration.leavingScreen,
+    }),
+    marginLeft: drawerMiniWidth,
+  },
+  childrenShift: {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: transitions.create(["width", "margin"], {
+      easing: transitions.easing.sharp,
+      duration: transitions.duration.enteringScreen,
+    }),
+  },
+}));
