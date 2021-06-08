@@ -5,12 +5,12 @@ import IconButton from "@material-ui/core/IconButton";
 import Input from "@material-ui/core/OutlinedInput";
 import { makeStyles, fade } from "@material-ui/core/styles";
 
-import HomeIcon from "@material-ui/icons/Home";
 import SendIcon from "@material-ui/icons/Send";
 
 import useChatComposer from "@web/hooks/useChatComposer";
 import { drawerMiniWidth, drawerWidth } from "@web/fixed";
-import { drawerOpenVar, recipientVar } from "@web/reactive";
+import { drawerOpenVar } from "@web/reactive";
+import HomeButton from "@web/components/icon-button/HomeButton";
 
 export default function BottomPane() {
   const classes = useStyles();
@@ -19,13 +19,9 @@ export default function BottomPane() {
 
   const drawerOpen = useReactiveVar(drawerOpenVar);
 
-  const goHome = () => recipientVar("");
-
   return (
     <div className={cx(classes.bottom, { [classes.bottomShift]: drawerOpen })}>
-      <IconButton className={classes.iconButton} color="primary" onClick={goHome}>
-        <HomeIcon className={classes.icon} />
-      </IconButton>
+      <HomeButton className={classes.iconButton} />
       <div className={classes.inputContainer}>
         <form onSubmit={onSendMessage}>
           <Input
@@ -40,7 +36,7 @@ export default function BottomPane() {
       </div>
       {weConnect && (
         <IconButton onClick={onSendMessage} className={classes.iconButton}>
-          <SendIcon className={classes.icon} />
+          <SendIcon />
         </IconButton>
       )}
     </div>
@@ -72,11 +68,11 @@ const useStyles = makeStyles(({ palette: { background, primary, text }, zIndex, 
       duration: transitions.duration.enteringScreen,
     }),
   },
-  icon: {
-    fontSize: 30,
-  },
   iconButton: {
     marginRight: 10,
+    "& .MuiSvgIcon-root": {
+      fontSize: 30,
+    },
   },
   inputContainer: {
     flexGrow: 1,

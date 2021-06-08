@@ -29,6 +29,7 @@ export const UserResolver: Resolver.Resolvers<IUser> = {
 
     myBlacklist: async (_, __, { authenticate, uid }) => {
       authenticate();
+      await waitFor(3000);
       const user = await User.findOne({ _id: uid }, { blockedByMe: 1 }).lean();
       const blacklist = user?.blockedByMe || [];
       if (blacklist.length) return User.find({ _id: { $in: blacklist } }).lean();
@@ -41,7 +42,6 @@ export const UserResolver: Resolver.Resolvers<IUser> = {
 
     user: async (_, { userId }, { authenticate }) => {
       authenticate();
-      await waitFor(3000);
       return User.findOne({ _id: userId }).lean();
     },
   },

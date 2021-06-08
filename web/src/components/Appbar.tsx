@@ -11,6 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import MenuIcon from "@material-ui/icons/Menu";
 
 import BlockUserButton from "@web/components/icon-button/BlockUserButton";
+import HomeButton from "@web/components/icon-button/HomeButton";
 import LogoutButton from "@web/components/icon-button/LogoutButton";
 import ToggleThemeButton from "@web/components/icon-button/ToggleThemeButton";
 import { drawerOpenVar, appbarTitleVar } from "@web/reactive";
@@ -47,6 +48,7 @@ export default function Appbar() {
           <div className={classes.rightButtons}>
             <BlockUserButton />
             <ToggleThemeButton />
+            <HomeButton />
             <LogoutButton />
           </div>
         </Toolbar>

@@ -11,14 +11,18 @@ export const ChatResolver: Resolver.Resolvers<IChat> = {
   Query: {
     chatThread: async (_, { recipient }, { uid, authenticate }) => {
       authenticate();
-      return Chat.find({ thread: getThreadId(recipient, uid) }).lean();
+      return Chat.find({ thread: getThreadId(recipient, uid) })
+        .limit(100)
+        .lean();
     },
 
     recentChats: async (_, __, { uid, authenticate }) => {
       authenticate();
       const chatThreads = await Chat.distinct("thread", { $or: [{ recipient: uid }, { sender: uid }] });
       const chatHeads = chatThreads.map((v) => getFriendFromThread(uid, v));
-      return User.find({ _id: { $in: chatHeads } }).lean();
+      return User.find({ _id: { $in: chatHeads } })
+        .limit(100)
+        .lean();
     },
   },
 

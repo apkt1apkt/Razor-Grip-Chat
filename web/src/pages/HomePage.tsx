@@ -12,7 +12,6 @@ export default function HomePage() {
   return (
     <Page title="Razor Grip Chat">
       <div className={classes.container}>
-        <div>There are no chats</div>
         <div className={classes.buttonContainer}>
           <Button
             variant="contained"
