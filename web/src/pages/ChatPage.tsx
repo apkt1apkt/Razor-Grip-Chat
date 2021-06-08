@@ -2,12 +2,13 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import ChatMessage from "@web/components/ChatMessage";
 import Page from "@web/components/Page";
+import PageLoading from "@web/components/PageLoading";
 import UserListItem from "@web/components/UserListItem";
 import useChatThread from "@web/hooks/useChatThread";
 
 export default function ChatPage() {
   const classes = useStyles();
-  const { chatThread, recipientData } = useChatThread();
+  const { chatThread, recipientData, loading } = useChatThread();
   return (
     <Page
       title={
@@ -16,6 +17,7 @@ export default function ChatPage() {
         </div>
       }
     >
+      <PageLoading loading={loading} />
       <div className={classes.chatContainer}>
         <div className={classes.chat}>
           {chatThread.map((v) => (

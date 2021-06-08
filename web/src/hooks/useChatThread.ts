@@ -6,7 +6,7 @@ import { recipientVar } from "@web/reactive";
 
 export default function useChatThread() {
   const recipient = useReactiveVar(recipientVar);
-  const { data, subscribeToMore } = useQuery<QueryResult<"chatThread", Chat[]>>(CHAT_THREAD, {
+  const { data, subscribeToMore, loading } = useQuery<QueryResult<"chatThread", Chat[]>>(CHAT_THREAD, {
     variables: { recipient },
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
@@ -37,7 +37,7 @@ export default function useChatThread() {
     };
   }, [subscribeToMore, recipient]);
 
-  return { chatThread: data?.chatThread || [], recipientData: userData?.user || {} };
+  return { chatThread: data?.chatThread || [], recipientData: userData?.user || {}, loading };
 }
 
 export const CHAT_THREAD = gql`

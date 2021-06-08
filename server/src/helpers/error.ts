@@ -31,9 +31,5 @@ export const tryCatchWrap = async <T>(
 export enum ErrorCodes {
   App = "APP",
 
-  InternalServer = "INTERNAL_SERVER_ERROR",
-
-  Db = "DB_ERROR",
-
   GraphQlValidation = "GRAPHQL_VALIDATION_FAILED",
 }

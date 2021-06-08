@@ -1,12 +1,12 @@
 import compression from "compression";
 import express from "express";
 import helmet from "helmet";
+import path from "path";
 import { createServer } from "http";
 
 import apolloServer from "@server/apollo";
 import logger, { logs } from "@server/logger";
-import routes from "@server/router";
-import { HOST_PORT } from "@server/fixed";
+import { HOST_PORT, isProduction } from "@server/fixed";
 import "@server/mongo";
 
 const server = express();
@@ -17,7 +17,13 @@ server.use(helmet({ contentSecurityPolicy: false }));
 
 server.use(logs);
 
-server.use(routes);
+if (isProduction) {
+  server.use(express.static(path.join(__dirname, "../../web/build")));
+
+  server.get("/", (_, res) => {
+    res.sendFile(path.join(__dirname, "../../web/build/index.html"));
+  });
+}
 
 apolloServer.applyMiddleware({ app: server, cors: true });
 
