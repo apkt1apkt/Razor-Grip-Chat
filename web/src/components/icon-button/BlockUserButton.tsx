@@ -13,7 +13,7 @@ import { recipientVar } from "@web/reactive";
 function BlockUserButton() {
   const recipient = useReactiveVar(recipientVar);
 
-  const { getBlockStatus, blockUser, unblockUser } = useBlockUser();
+  const { getBlockStatus, onBlockUser, onUnblockUser } = useBlockUser();
 
   const blockStatus = getBlockStatus(recipient);
 
@@ -23,8 +23,8 @@ function BlockUserButton() {
 
   const handleClick = () => {
     if (!recipient) return;
-    if (showBlock) blockUser({ userId: recipient });
-    else unblockUser({ userId: recipient });
+    if (showBlock) onBlockUser({ userId: recipient })();
+    else onUnblockUser({ userId: recipient })();
   };
 
   return (

@@ -1,11 +1,11 @@
-import { Theme, makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
-export default function NoneFound(props: { message?: string }) {
+export default function NoneFound(props: NoneFoundProps) {
+  const { className, message } = props;
   const classes = useStyles();
-  const { message } = props;
   return (
-    <>
-      <div className={classes.root}>
+    <div className={className ?? classes.root}>
+      <div className={classes.container}>
         <svg width="120" height="100" viewBox="0 0 184 152" aria-hidden focusable="false">
           <g fill="none" fillRule="evenodd">
             <g transform="translate(24 31.67)">
@@ -35,7 +35,7 @@ export default function NoneFound(props: { message?: string }) {
         </svg>
       </div>
       <div className={classes.label}>{message}</div>
-    </>
+    </div>
   );
 }
 
@@ -43,29 +43,39 @@ NoneFound.defaultProps = {
   message: "No Data",
 };
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
+type NoneFoundProps = {
+  message?: string;
+  className?: string;
+};
+
+const useStyles = makeStyles(({ palette: { type }, spacing }) => ({
+  container: {
     flexDirection: "column",
     "& .ant-empty-img-1": {
-      fill: theme.palette.type === "light" ? "#aeb8c2" : "#262626",
+      fill: type === "light" ? "#aeb8c2" : "#262626",
     },
     "& .ant-empty-img-2": {
-      fill: theme.palette.type === "light" ? "#f5f5f7" : "#595959",
+      fill: type === "light" ? "#f5f5f7" : "#595959",
     },
     "& .ant-empty-img-3": {
-      fill: theme.palette.type === "light" ? "#dce0e6" : "#434343",
+      fill: type === "light" ? "#dce0e6" : "#434343",
     },
     "& .ant-empty-img-4": {
-      fill: theme.palette.type === "light" ? "#fff" : "#1c1c1c",
+      fill: type === "light" ? "#fff" : "#1c1c1c",
     },
     "& .ant-empty-img-5": {
-      fillOpacity: theme.palette.type === "light" ? "0.8" : "0.08",
-      fill: theme.palette.type === "light" ? "#f5f5f5" : "#fff",
+      fillOpacity: type === "light" ? "0.8" : "0.08",
+      fill: type === "light" ? "#f5f5f5" : "#fff",
     },
   },
   label: {
-    marginTop: theme.spacing(1),
+    marginTop: spacing(1),
     display: "flex",
     justifyContent: "center",
+  },
+  root: {
+    display: "grid",
+    placeItems: "center",
+    marginTop: "15vh",
   },
 }));
