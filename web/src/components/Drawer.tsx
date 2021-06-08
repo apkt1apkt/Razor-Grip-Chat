@@ -48,7 +48,7 @@ export default function Drawer(props: DrawerProps) {
 
 export type DrawerProps = { children: React.ReactNode };
 
-const useStyles = makeStyles(({ transitions, breakpoints, spacing, mixins }) => ({
+const useStyles = makeStyles(({ transitions, spacing, mixins }) => ({
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
@@ -67,10 +67,7 @@ const useStyles = makeStyles(({ transitions, breakpoints, spacing, mixins }) => 
       duration: transitions.duration.leavingScreen,
     }),
     overflowX: "hidden",
-    width: spacing(7) + 1,
-    [breakpoints.up("sm")]: {
-      width: spacing(9) + 1,
-    },
+    width: spacing(9) + 1,
   },
   toolbar: {
     display: "flex",

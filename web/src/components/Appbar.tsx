@@ -44,7 +44,7 @@ export default function Appbar() {
               appbarTitle
             )}
           </div>
-          <div>
+          <div className={classes.rightButtons}>
             <BlockUserButton />
             <ToggleThemeButton />
             <LogoutButton />
@@ -83,5 +83,11 @@ const useStyles = makeStyles(({ transitions, zIndex, palette: { background, text
       display: "flex",
       alignItems: "center",
     },
+  },
+  rightButtons: {
+    position: "fixed",
+    right: 0,
+    zIndex: zIndex.drawer + 2,
+    backgroundColor: background.paper,
   },
 }));
