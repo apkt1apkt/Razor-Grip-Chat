@@ -1,3 +1,4 @@
+import { tryCatchWrap } from "@server/helpers/error";
 import { IChat, Chat, getThreadId } from "@server/model/chat";
 import { User } from "@server/model/user";
 import { PUBLISH, SUBSCRIBE } from "@server/redis";
@@ -29,7 +30,9 @@ export const ChatResolver: Resolver.Resolvers<IChat> = {
   Mutation: {
     sendMessage: async (_, { message, recipient }, { uid, authenticate }) => {
       authenticate();
-      const chat = await Chat.create({ thread: getThreadId(recipient, uid), recipient, sender: uid, message });
+      const func = async () =>
+        await Chat.create({ thread: getThreadId(recipient, uid), recipient, sender: uid, message });
+      const chat = await tryCatchWrap(func);
       PUBLISH("incomingMessage", { incomingMessage: chat });
       return chat;
     },

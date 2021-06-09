@@ -1,6 +1,6 @@
 import { User, IUser } from "@server/model/user";
 import { PUBLISH, SUBSCRIBE } from "@server/redis";
-import { tryCatchWrap } from "@server/helpers/error";
+import { sessionWrap, tryCatchWrap } from "@server/helpers/error";
 
 export const userIsOnline = async (isOnline: boolean, _id: string) => {
   tryCatchWrap(async () => {
@@ -53,18 +53,36 @@ export const UserResolver: Resolver.Resolvers<IUser> = {
 
     blockUser: async (_, { userId }, { authenticate, uid }) => {
       authenticate();
-      const u1 = await User.findOneAndUpdate({ _id: uid }, { $push: { blockedByMe: userId } }, { new: true });
-      const u2 = await User.findOneAndUpdate({ _id: userId }, { $push: { blockedByOthers: uid } }, { new: true });
-      const result = [u1, u2];
+
+      const result = await sessionWrap(async (session) => {
+        const u1 = await User.findOneAndUpdate({ _id: uid }, { $push: { blockedByMe: userId } }, { new: true }).session(
+          session
+        );
+        const u2 = await User.findOneAndUpdate(
+          { _id: userId },
+          { $push: { blockedByOthers: uid } },
+          { new: true }
+        ).session(session);
+        return [u1, u2];
+      }, "Failed to block user");
       PUBLISH("weConnectStatusChanged", { weConnectStatusChanged: result });
       return result;
     },
 
     unblockUser: async (_, { userId }, { authenticate, uid }) => {
       authenticate();
-      const u1 = await User.findOneAndUpdate({ _id: uid }, { $pull: { blockedByMe: userId } }, { new: true });
-      const u2 = await User.findOneAndUpdate({ _id: userId }, { $pull: { blockedByOthers: uid } }, { new: true });
-      const result = [u1, u2];
+
+      const result = await sessionWrap(async (session) => {
+        const u1 = await User.findOneAndUpdate({ _id: uid }, { $pull: { blockedByMe: userId } }, { new: true }).session(
+          session
+        );
+        const u2 = await User.findOneAndUpdate(
+          { _id: userId },
+          { $pull: { blockedByOthers: uid } },
+          { new: true }
+        ).session(session);
+        return [u1, u2];
+      }, "Failed to unblock user");
       PUBLISH("weConnectStatusChanged", { weConnectStatusChanged: result });
       return result;
     },

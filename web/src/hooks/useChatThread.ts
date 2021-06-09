@@ -29,7 +29,7 @@ export default function useChatThread() {
         const chat = (subscriptionData?.data as any)?.incomingMessage;
         if (!chat) return prev;
         const prevChatThread = (prev.chatThread || []).filter((v) => v?._id !== chat?._id);
-        return { ...prev, chatThread: [...prevChatThread, chat] };
+        return { ...prev, chatThread: [...prevChatThread, chat].slice(0, 500) };
       },
     });
     return () => {
