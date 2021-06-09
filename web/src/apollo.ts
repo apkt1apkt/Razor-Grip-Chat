@@ -50,6 +50,26 @@ export default new ApolloClient({
               id: args?.userId,
             });
           },
+
+          usersOnline: {
+            merge(_, incoming) {
+              return incoming;
+            },
+          },
+
+          chatThread: {
+            merge(_, incoming) {
+              return incoming;
+            },
+          },
+        },
+      },
+
+      User: {
+        fields: {
+          blockedBy: {
+            merge: false,
+          },
         },
       },
     },

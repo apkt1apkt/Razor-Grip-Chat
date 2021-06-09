@@ -1,4 +1,4 @@
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useApolloClient } from "@apollo/client";
 import { useEffect } from "react";
 
 import { userPayload, User } from "@web/payload";
@@ -7,12 +7,17 @@ import useMe from "@web/hooks/useMe";
 export default function useUsersOnline() {
   const { _id: myId } = useMe();
   const { data, subscribeToMore } = useQuery<UsersOnline>(USERS_ONLINE);
+  const client = useApolloClient();
 
   useEffect(() => {
     const unsubscribe = subscribeToMore({
       document: USER_ONLINE_STATUS_CHANGED,
       updateQuery: (prev, { subscriptionData }) => {
         const user: User = (subscriptionData.data as any)?.userOnlineStatusChanged;
+        if (user?._id === myId) {
+          client.mutate({ mutation: AM_ONLINE }).catch((e) => e);
+          return prev;
+        }
         return modifyUsersOnlineCache(user, prev);
       },
     });
@@ -20,7 +25,7 @@ export default function useUsersOnline() {
     return () => {
       unsubscribe();
     };
-  }, [subscribeToMore]);
+  }, [subscribeToMore, myId, client]);
 
   useEffect(() => {
     const unsubscribe = subscribeToMore({
@@ -67,6 +72,14 @@ const WE_CONNECT_STATUS_CHANGED = gql`
   subscription WeConnectStatusChanged {
     weConnectStatusChanged {
      ${userPayload}
+    }
+  }
+`;
+
+const AM_ONLINE = gql`
+  mutation AmOnline{
+    amOnline{
+      ${userPayload}
     }
   }
 `;

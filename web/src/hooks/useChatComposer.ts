@@ -41,6 +41,7 @@ export default function useChatComposer() {
             ? __chatThread
             : __chatThread.filter((v: any) => v?._id !== sendMessage._id);
           const newChatThread = [...chatThread, sendMessage];
+
           cache.writeQuery({
             query: CHAT_THREAD,
             variables,

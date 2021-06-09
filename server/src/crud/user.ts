@@ -51,6 +51,19 @@ export const UserResolver: Resolver.Resolvers<IUser> = {
       return user;
     },
 
+    amOnline: async (_, __, { authenticate, uid }) => {
+      authenticate();
+      const me = await User.findOne({ _id: uid });
+      if (me) {
+        if (me.isOnline) return me;
+        me.isOnline = true;
+        me.lastSeen = new Date();
+        await me.save();
+        PUBLISH("userOnlineStatusChanged", { userOnlineStatusChanged: me });
+        return me;
+      }
+    },
+
     blockUser: async (_, { userId }, { authenticate, uid }) => {
       authenticate();
 
@@ -92,7 +105,7 @@ export const UserResolver: Resolver.Resolvers<IUser> = {
     userOnlineStatusChanged: SUBSCRIBE("userOnlineStatusChanged", (_, __, { uid, isAuthenticated }) => {
       if (!isAuthenticated) return false;
       const payload: IUser = _.userOnlineStatusChanged || {};
-      return payload._id !== uid && weConnect(uid, payload);
+      return payload._id === uid || weConnect(uid, payload);
     }),
 
     weConnectStatusChanged: SUBSCRIBE("weConnectStatusChanged", (_, __, { uid, isAuthenticated }) => {
@@ -136,6 +149,7 @@ export const UserTypedef = `
     updateMe(body:UserInput!): User
     blockUser(userId:String!): [User]
     unblockUser(userId:String!): [User]
+    amOnline: User
   }
 
   extend type Subscription {

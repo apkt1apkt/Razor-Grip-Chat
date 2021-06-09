@@ -5,10 +5,16 @@ import Page from "@web/components/Page";
 import PageLoading from "@web/components/PageLoading";
 import UserListItem from "@web/components/UserListItem";
 import useChatThread from "@web/hooks/useChatThread";
+import { useLayoutEffect } from "react";
 
 export default function ChatPage() {
   const classes = useStyles();
   const { chatThread, recipientData, loading } = useChatThread();
+
+  useLayoutEffect(() => {
+    document.getElementById(chatThread?.[chatThread.length - 1]?._id!)?.scrollIntoView();
+  });
+
   return (
     <Page
       title={
@@ -17,12 +23,17 @@ export default function ChatPage() {
         </div>
       }
     >
-      <PageLoading loading={loading} />
-      <div className={classes.chatContainer}>
-        <div className={classes.chat}>
-          {chatThread.map((v) => (
-            <ChatMessage key={v?._id} {...v} />
-          ))}
+      <div className={classes.container}>
+        <PageLoading loading={loading} />
+
+        <div className={classes.chatContainer}>
+          <div className={classes.chat}>
+            {chatThread.map((v) => (
+              <div id={v?._id!} key={v?._id}>
+                <ChatMessage {...v} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </Page>
@@ -30,28 +41,22 @@ export default function ChatPage() {
 }
 
 const useStyles = makeStyles(({ palette: { background, type, info }, breakpoints }) => ({
+  container: {
+    paddingBottom: 45,
+  },
   chatContainer: {
-    [breakpoints.down("xs")]: {
-      height: "calc(100vh - 55px - 56px)",
-    },
-    padding: "15px 30px",
-    margin: "0 auto",
-    overflowY: "auto",
-    backgroundColor: "inherit",
-    transform: "rotate(180deg)",
-    direction: "rtl",
-    height: "calc(100vh - 55px - 64px)",
-    color: "inherit",
     flex: 1,
+    [breakpoints.down("xs")]: {
+      minHeight: "calc(100vh  - 56px - 55px)",
+    },
+    minHeight: "calc(100vh  - 64px - 55px)",
     background:
       type === "light"
         ? `linear-gradient(to right,${info.light}, ${info.main}, ${info.light})`
         : `linear-gradient(to right,${background.paper}, ${background.default}, ${background.paper})`,
   },
   chat: {
-    display: "flex",
-    flexDirection: "column-reverse",
-    justifyContent: "flex-end",
+    padding: 15,
   },
   title: {
     marginLeft: -15,

@@ -11,23 +11,25 @@ export default function ChatMessage(props: ChatMessageProps) {
   const classes = useStyles();
   if (!message) return <></>;
   return (
-    <div className={cx(classes.root, { [classes.myMessage]: isMine })}>
-      <div className={classes.messageContent}>
-        <div className={classes.messageItem}>{message} </div>
-        {createdAt && (
-          <Tooltip title={createdAt.toDateString()}>
-            <div className={classes.dateItem}>
-              <div>
-                {createdAt.getHours()}:{createdAt.getMinutes()}
-              </div>
-              {_isOptimistic && (
+    <div>
+      <div className={cx(classes.root, { [classes.myMessage]: isMine })}>
+        <div className={classes.messageContent}>
+          <div className={classes.messageItem}>{message} </div>
+          {createdAt && (
+            <Tooltip title={createdAt.toDateString()}>
+              <div className={classes.dateItem}>
                 <div>
-                  <ClockIcon className={classes.icon} />
+                  {createdAt.getHours()}:{createdAt.getMinutes()}
                 </div>
-              )}
-            </div>
-          </Tooltip>
-        )}
+                {_isOptimistic && (
+                  <div>
+                    <ClockIcon className={classes.icon} />
+                  </div>
+                )}
+              </div>
+            </Tooltip>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -42,8 +44,6 @@ const useStyles = makeStyles(({ palette: { background, type, primary } }) => ({
     position: "relative",
     margin: "5px 0",
     wordBreak: "break-all",
-    transform: "rotate(180deg)",
-    direction: "ltr",
     background: type === "light" ? background.paper : `linear-gradient(to right, ${primary.main}, ${primary.dark})`,
   },
   myMessage: {
