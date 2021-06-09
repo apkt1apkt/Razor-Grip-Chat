@@ -13,7 +13,7 @@
   "scripts": {
     "server": "lerna exec --scope @razor/server -- yarn",
     "web": "lerna exec --scope @razor/web -- yarn",
-    "start:server": "yarn server start",
-    "start:web": "yarn web start"
+    "serve": "NODE_ENV=production node server/dist/index.js",
+    "build": "yarn --cwd web build && yarn server build"
   }
 }
