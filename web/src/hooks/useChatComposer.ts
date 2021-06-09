@@ -53,7 +53,7 @@ export default function useChatComposer() {
     setMessage("");
   };
 
-  return { message, recipient, onTypeMessage, onSendMessage, weConnect: !!data?.user?.weConnect };
+  return { message, recipient, onTypeMessage, onSendMessage, setMessage, weConnect: !!data?.user?.weConnect };
 }
 
 const SEND_MESSAGE = gql`

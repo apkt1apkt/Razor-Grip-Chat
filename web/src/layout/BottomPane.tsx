@@ -2,34 +2,37 @@ import cx from "clsx";
 import { useReactiveVar } from "@apollo/client";
 
 import IconButton from "@material-ui/core/IconButton";
-import Input from "@material-ui/core/OutlinedInput";
+import InputBase from "@material-ui/core/InputBase";
 import { makeStyles, fade } from "@material-ui/core/styles";
 
 import SendIcon from "@material-ui/icons/Send";
 
+import EmojiButton from "@web/components/icon-button/EmojiButton";
 import HomeButton from "@web/components/icon-button/HomeButton";
 import useChatComposer from "@web/hooks/useChatComposer";
-import { drawerMiniWidth, drawerWidth } from "@web/fixed";
+import { bottomPaneHeight, drawerMiniWidth, drawerWidth } from "@web/fixed";
 import { drawerOpenVar } from "@web/reactive";
 
 export default function BottomPane() {
   const classes = useStyles();
 
-  const { message, onSendMessage, onTypeMessage, weConnect } = useChatComposer();
+  const { message, onSendMessage, onTypeMessage, setMessage, weConnect } = useChatComposer();
 
   const drawerOpen = useReactiveVar(drawerOpenVar);
+
+  const onEmoji = (emoji: string) => setMessage(message + emoji);
 
   return (
     <div className={cx(classes.bottom, { [classes.bottomShift]: drawerOpen })}>
       <HomeButton className={classes.iconButton} />
       <div className={classes.inputContainer}>
-        <form onSubmit={onSendMessage}>
-          <Input
+        <form className={classes.form} onSubmit={onSendMessage}>
+          <EmojiButton getValue={onEmoji} className={classes.emojiButton} />
+          <InputBase
             value={weConnect ? message : ""}
             onChange={onTypeMessage}
             disabled={!weConnect}
             fullWidth
-            margin="dense"
             placeholder={weConnect ? "Type a message" : "Sorry!, you cannot chat this user"}
           />
         </form>
@@ -53,7 +56,7 @@ const useStyles = makeStyles(({ palette: { background, primary, text }, zIndex, 
     backgroundColor: background.paper,
     width: "100%",
     padding: 3,
-    height: 55,
+    height: bottomPaneHeight,
     zIndex: zIndex.drawer + 1,
     [breakpoints.up("sm")]: {
       marginLeft: drawerMiniWidth,
@@ -80,26 +83,20 @@ const useStyles = makeStyles(({ palette: { background, primary, text }, zIndex, 
       fontSize: 30,
     },
   },
+  emojiButton: {
+    margin: "0 10px",
+  },
+  form: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 100,
+    color: text.primary,
+    backgroundColor: fade(primary.main, 0.1),
+    height: 45,
+  },
   inputContainer: {
     flexGrow: 1,
-    marginLeft: -5,
     marginRight: -5,
-    "& .MuiOutlinedInput-root": {
-      borderRadius: 100,
-      "& input": {
-        color: text.primary,
-        paddingLeft: 20,
-      },
-      "& fieldset": {
-        borderColor: "transparent",
-        backgroundColor: fade(primary.main, 0.1),
-      },
-      "&:hover fieldset": {
-        borderColor: "transparent",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "transparent",
-      },
-    },
   },
 }));

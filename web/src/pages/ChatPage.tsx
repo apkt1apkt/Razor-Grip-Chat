@@ -1,3 +1,4 @@
+import { useLayoutEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 import ChatMessage from "@web/components/ChatMessage";
@@ -5,7 +6,7 @@ import Page from "@web/components/Page";
 import PageLoading from "@web/components/PageLoading";
 import UserListItem from "@web/components/UserListItem";
 import useChatThread from "@web/hooks/useChatThread";
-import { useLayoutEffect } from "react";
+import { bottomPaneHeight } from "@web/fixed";
 
 export default function ChatPage() {
   const classes = useStyles();
@@ -47,9 +48,9 @@ const useStyles = makeStyles(({ palette: { background, type, info }, breakpoints
   chatContainer: {
     flex: 1,
     [breakpoints.down("xs")]: {
-      minHeight: "calc(100vh  - 56px - 55px)",
+      minHeight: `calc(100vh  - 56px - ${bottomPaneHeight}px)`,
     },
-    minHeight: "calc(100vh  - 64px - 55px)",
+    minHeight: `calc(100vh  - 64px - ${bottomPaneHeight}px)`,
     background:
       type === "light"
         ? `linear-gradient(to right,${info.light}, ${info.main}, ${info.light})`

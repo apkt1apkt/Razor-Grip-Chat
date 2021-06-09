@@ -23,6 +23,7 @@ Project is created with:
 - Graphql
 - MongoDB
 - Redis
+  \_ Auth0
 
 ## Production setup
 
