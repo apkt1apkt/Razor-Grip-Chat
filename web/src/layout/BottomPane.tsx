@@ -7,10 +7,10 @@ import { makeStyles, fade } from "@material-ui/core/styles";
 
 import SendIcon from "@material-ui/icons/Send";
 
+import HomeButton from "@web/components/icon-button/HomeButton";
 import useChatComposer from "@web/hooks/useChatComposer";
 import { drawerMiniWidth, drawerWidth } from "@web/fixed";
 import { drawerOpenVar } from "@web/reactive";
-import HomeButton from "@web/components/icon-button/HomeButton";
 
 export default function BottomPane() {
   const classes = useStyles();
@@ -43,40 +43,47 @@ export default function BottomPane() {
   );
 }
 
-const useStyles = makeStyles(({ palette: { background, primary, text }, zIndex, transitions }) => ({
+const useStyles = makeStyles(({ palette: { background, primary, text }, zIndex, transitions, breakpoints }) => ({
   bottom: {
     bottom: 0,
     position: "fixed",
-    padding: 10,
-    width: `calc(100% - ${drawerMiniWidth}px)`,
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    transition: transitions.create(["width", "margin"], {
-      easing: transitions.easing.sharp,
-      duration: transitions.duration.leavingScreen,
-    }),
     backgroundColor: background.paper,
+    width: "100%",
+    padding: 3,
+    height: 55,
     zIndex: zIndex.drawer + 1,
-    marginLeft: drawerMiniWidth,
+    [breakpoints.up("sm")]: {
+      marginLeft: drawerMiniWidth,
+      transition: transitions.create(["width", "margin"], {
+        easing: transitions.easing.sharp,
+        duration: transitions.duration.leavingScreen,
+      }),
+      width: `calc(100% - ${drawerMiniWidth}px)`,
+      padding: 10,
+    },
   },
   bottomShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: transitions.create(["width", "margin"], {
-      easing: transitions.easing.sharp,
-      duration: transitions.duration.enteringScreen,
-    }),
+    [breakpoints.up("sm")]: {
+      marginLeft: drawerWidth,
+      width: `calc(100% - ${drawerWidth}px)`,
+      transition: transitions.create(["width", "margin"], {
+        easing: transitions.easing.sharp,
+        duration: transitions.duration.enteringScreen,
+      }),
+    },
   },
   iconButton: {
-    marginRight: 10,
     "& .MuiSvgIcon-root": {
       fontSize: 30,
     },
   },
   inputContainer: {
     flexGrow: 1,
-    marginLeft: -10,
+    marginLeft: -5,
+    marginRight: -5,
     "& .MuiOutlinedInput-root": {
       borderRadius: 100,
       "& input": {

@@ -13,7 +13,7 @@ export default function ChatPage() {
     <Page
       title={
         <div className={classes.title}>
-          <UserListItem {...recipientData} />
+          <UserListItem {...recipientData} closeGutter />
         </div>
       }
     >
@@ -31,13 +31,16 @@ export default function ChatPage() {
 
 const useStyles = makeStyles(({ palette: { background, type, info }, breakpoints }) => ({
   chatContainer: {
+    [breakpoints.down("xs")]: {
+      height: "calc(100vh - 55px - 56px)",
+    },
     padding: "15px 30px",
     margin: "0 auto",
     overflowY: "auto",
     backgroundColor: "inherit",
     transform: "rotate(180deg)",
     direction: "rtl",
-    height: "calc(100vh - 138px)",
+    height: "calc(100vh - 55px - 64px)",
     color: "inherit",
     flex: 1,
     background:
@@ -51,9 +54,6 @@ const useStyles = makeStyles(({ palette: { background, type, info }, breakpoints
     justifyContent: "flex-end",
   },
   title: {
-    marginLeft: -25,
-    [breakpoints.down("xs")]: {
-      marginLeft: -15,
-    },
+    marginLeft: -15,
   },
 }));

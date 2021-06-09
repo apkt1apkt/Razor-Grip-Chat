@@ -6,13 +6,15 @@ import IconButton from "@material-ui/core/IconButton";
 import MaterialAppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 
 import MenuIcon from "@material-ui/icons/Menu";
 
 import BlockUserButton from "@web/components/icon-button/BlockUserButton";
 import HomeButton from "@web/components/icon-button/HomeButton";
 import LogoutButton from "@web/components/icon-button/LogoutButton";
+import MobileCombo from "@web/components/icon-button/MobileCombo";
 import ToggleThemeButton from "@web/components/icon-button/ToggleThemeButton";
 import { drawerOpenVar, appbarTitleVar } from "@web/reactive";
 import { drawerWidth } from "@web/fixed";
@@ -21,7 +23,10 @@ export default function Appbar() {
   const classes = useStyles();
   const drawerOpen = useReactiveVar(drawerOpenVar);
   const appbarTitle = useReactiveVar(appbarTitleVar);
+  const theme = useTheme();
+  const isWideScreen = useMediaQuery(theme.breakpoints.up("sm"));
   const handleDrawerOpen = () => drawerOpenVar(true);
+  const titleIsString = typeof appbarTitle === "string";
   return (
     <>
       <CssBaseline />
@@ -31,13 +36,13 @@ export default function Appbar() {
         className={cx(classes.appBar, { [classes.appBarShift]: drawerOpen })}
       >
         <Toolbar className={classes.toolbar}>
-          <div>
-            {!drawerOpen && (
+          <div className={classes.left}>
+            {!drawerOpen && (isWideScreen || titleIsString) && (
               <IconButton onClick={handleDrawerOpen} edge="start" className={classes.menuButton}>
                 <MenuIcon />
               </IconButton>
             )}
-            {typeof appbarTitle === "string" ? (
+            {titleIsString ? (
               <Typography variant="h6" noWrap>
                 {appbarTitle}
               </Typography>
@@ -47,9 +52,12 @@ export default function Appbar() {
           </div>
           <div className={classes.rightButtons}>
             <BlockUserButton />
-            <ToggleThemeButton />
             <HomeButton />
+            <ToggleThemeButton />
             <LogoutButton />
+          </div>
+          <div className={classes.mobileButton}>
+            <MobileCombo />
           </div>
         </Toolbar>
       </MaterialAppBar>
@@ -57,7 +65,7 @@ export default function Appbar() {
   );
 }
 
-const useStyles = makeStyles(({ transitions, zIndex, palette: { background, text } }) => ({
+const useStyles = makeStyles(({ transitions, zIndex, palette: { background, text }, breakpoints }) => ({
   appBar: {
     zIndex: zIndex.drawer + 1,
     transition: transitions.create(["width", "margin"], {
@@ -68,15 +76,27 @@ const useStyles = makeStyles(({ transitions, zIndex, palette: { background, text
     color: text.primary,
   },
   appBarShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: transitions.create(["width", "margin"], {
-      easing: transitions.easing.sharp,
-      duration: transitions.duration.enteringScreen,
-    }),
+    [breakpoints.up("sm")]: {
+      marginLeft: drawerWidth,
+      width: `calc(100% - ${drawerWidth}px)`,
+      transition: transitions.create(["width", "margin"], {
+        easing: transitions.easing.sharp,
+        duration: transitions.duration.enteringScreen,
+      }),
+    },
+  },
+  left: {
+    width: "calc(100% - 20px)",
+    [breakpoints.up("md")]: {
+      width: "calc(100% - 180px) !important",
+    },
   },
   menuButton: {
-    marginRight: 36,
+    marginRight: 0,
+    marginLeft: -15,
+    [breakpoints.up("sm")]: {
+      marginRight: "36px !important",
+    },
   },
   toolbar: {
     display: "flex",
@@ -87,9 +107,13 @@ const useStyles = makeStyles(({ transitions, zIndex, palette: { background, text
     },
   },
   rightButtons: {
-    position: "fixed",
-    right: 0,
-    zIndex: zIndex.drawer + 2,
-    backgroundColor: background.paper,
+    [breakpoints.down("sm")]: {
+      display: "none !important",
+    },
+  },
+  mobileButton: {
+    [breakpoints.up("md")]: {
+      display: "none !important",
+    },
   },
 }));

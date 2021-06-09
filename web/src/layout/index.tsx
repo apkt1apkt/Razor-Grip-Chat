@@ -53,7 +53,7 @@ export default function Layout() {
   );
 }
 
-const useStyles = makeStyles(({ spacing, mixins, transitions }) => ({
+const useStyles = makeStyles(({ spacing, mixins, transitions, breakpoints }) => ({
   toolbar: {
     display: "flex",
     alignItems: "center",
@@ -62,19 +62,23 @@ const useStyles = makeStyles(({ spacing, mixins, transitions }) => ({
     ...mixins.toolbar,
   },
   children: {
-    width: `calc(100% - ${drawerMiniWidth}px)`,
-    transition: transitions.create(["width", "margin"], {
-      easing: transitions.easing.sharp,
-      duration: transitions.duration.leavingScreen,
-    }),
-    marginLeft: drawerMiniWidth,
+    [breakpoints.up("sm")]: {
+      width: `calc(100% - ${drawerMiniWidth}px)`,
+      transition: transitions.create(["width", "margin"], {
+        easing: transitions.easing.sharp,
+        duration: transitions.duration.leavingScreen,
+      }),
+      marginLeft: drawerMiniWidth,
+    },
   },
   childrenShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: transitions.create(["width", "margin"], {
-      easing: transitions.easing.sharp,
-      duration: transitions.duration.enteringScreen,
-    }),
+    [breakpoints.up("sm")]: {
+      marginLeft: drawerWidth,
+      width: `calc(100% - ${drawerWidth}px)`,
+      transition: transitions.create(["width", "margin"], {
+        easing: transitions.easing.sharp,
+        duration: transitions.duration.enteringScreen,
+      }),
+    },
   },
 }));

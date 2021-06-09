@@ -37,6 +37,7 @@ const useStyles = makeStyles({
     placeItems: "center",
     placeContent: "center",
     height: "70vh",
+    padding: 15,
   },
   buttonContainer: {
     marginTop: 10,

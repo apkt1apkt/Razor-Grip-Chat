@@ -1,5 +1,4 @@
 import { memo } from "react";
-import { useReactiveVar } from "@apollo/client";
 
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -7,29 +6,18 @@ import Tooltip from "@material-ui/core/Tooltip";
 import BlockIcon from "@material-ui/icons/Block";
 import UnblockIcon from "@material-ui/icons/PersonAdd";
 
-import useBlockUser from "@web/hooks/useBlockUser";
-import { recipientVar } from "@web/reactive";
+import useBlockButton from "@web/hooks/useBlockButton";
 
 function BlockUserButton() {
-  const recipient = useReactiveVar(recipientVar);
+  const data = useBlockButton();
 
-  const { getBlockStatus, onBlockUser, onUnblockUser } = useBlockUser();
+  if (!data) return <></>;
 
-  const blockStatus = getBlockStatus(recipient);
-
-  if (!blockStatus) return <></>;
-
-  const showBlock = blockStatus !== "Blocked";
-
-  const handleClick = () => {
-    if (!recipient) return;
-    if (showBlock) onBlockUser({ userId: recipient })();
-    else onUnblockUser({ userId: recipient })();
-  };
+  const { onBlockUnblock, showBlock, action } = data;
 
   return (
-    <Tooltip title="Block this user">
-      <IconButton onClick={handleClick}>{showBlock ? <BlockIcon /> : <UnblockIcon />}</IconButton>
+    <Tooltip title={`${action} this user`}>
+      <IconButton onClick={onBlockUnblock}>{showBlock ? <BlockIcon /> : <UnblockIcon />}</IconButton>
     </Tooltip>
   );
 }

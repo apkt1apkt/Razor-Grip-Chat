@@ -1,19 +1,15 @@
-import { useReactiveVar } from "@apollo/client";
-
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 
 import DarkIcon from "@material-ui/icons/Brightness4";
 import LightIcon from "@material-ui/icons/Brightness7";
 
-import { themeVar } from "@web/reactive";
+import useThemeToggler from "@web/hooks/useThemeToggler";
 
 export default function ToggleThemeButton() {
-  const mode = useReactiveVar(themeVar);
-  const isDark = mode === "dark";
-  const toggleMode = () => themeVar(isDark ? "light" : "dark");
+  const { toggleMode, isDark, title } = useThemeToggler();
   return (
-    <Tooltip title={`Switch to ${isDark ? "light" : "dark"} theme`}>
+    <Tooltip title={title}>
       <IconButton onClick={toggleMode} color="primary">
         {isDark ? <LightIcon /> : <DarkIcon />}
       </IconButton>

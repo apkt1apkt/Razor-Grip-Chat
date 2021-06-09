@@ -19,8 +19,7 @@ server.use(logs);
 
 if (isProduction) {
   server.use(express.static(path.join(__dirname, "../../web/build")));
-
-  server.get("/", (_, res) => {
+  server.get("/*", (_, res) => {
     res.sendFile(path.join(__dirname, "../../web/build/index.html"));
   });
 }

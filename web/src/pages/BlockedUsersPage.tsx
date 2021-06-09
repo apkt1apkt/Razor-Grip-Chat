@@ -1,4 +1,5 @@
 import List from "@material-ui/core/List";
+import { makeStyles } from "@material-ui/core/styles";
 
 import NoneFound from "@web/components/NoneFound";
 import Page from "@web/components/Page";
@@ -7,12 +8,14 @@ import UserListItem from "@web/components/UserListItem";
 import useBlockedUsers from "@web/hooks/useBlockedUsers";
 
 export default function BlockedUsersPage() {
+  const classes = useStyles();
+
   const { blockedUsers, onUnblockUser, loading, firstLoad } = useBlockedUsers();
 
   const noList = !blockedUsers && !firstLoad && <NoneFound message="You have no blocked users" />;
 
   const content = blockedUsers && !firstLoad && (
-    <List>
+    <List className={classes.list}>
       {blockedUsers.map((v: any) => (
         <UserListItem
           key={v?._id}
@@ -33,3 +36,11 @@ export default function BlockedUsersPage() {
     </Page>
   );
 }
+
+const useStyles = makeStyles(({ breakpoints }) => ({
+  list: {
+    [breakpoints.down("xs")]: {
+      paddingLeft: 10,
+    },
+  },
+}));
