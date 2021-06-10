@@ -47,7 +47,7 @@ export default function Appbar() {
                 {appbarTitle}
               </Typography>
             ) : (
-              appbarTitle
+              <div style={{ marginTop: -5, marginBottom: -5 }}>{appbarTitle}</div>
             )}
           </div>
           <div className={classes.rightButtons}>
@@ -90,6 +90,8 @@ const useStyles = makeStyles(({ transitions, zIndex, palette: { background, text
     [breakpoints.up("md")]: {
       width: "calc(100% - 180px) !important",
     },
+    display: "flex",
+    alignItems: "center",
   },
   menuButton: {
     marginRight: 0,
@@ -101,15 +103,13 @@ const useStyles = makeStyles(({ transitions, zIndex, palette: { background, text
   toolbar: {
     display: "flex",
     justifyContent: "space-between",
-    "& div": {
-      display: "flex",
-      alignItems: "center",
-    },
+    alignItems: "center",
   },
   rightButtons: {
     [breakpoints.down("sm")]: {
       display: "none !important",
     },
+    display: "flex",
   },
   mobileButton: {
     [breakpoints.up("md")]: {

@@ -26,9 +26,9 @@ export default function BottomPane() {
     <div className={cx(classes.bottom, { [classes.bottomShift]: drawerOpen })}>
       <HomeButton className={classes.iconButton} />
       <div className={classes.inputContainer}>
-        <div className={classes.form}>
+        <div className={classes.inputContent}>
           <EmojiButton getValue={onEmoji} className={classes.emojiButton} />
-          <form onSubmit={onSendMessage}>
+          <form onSubmit={onSendMessage} className={classes.input}>
             <InputBase
               value={weConnect ? message : ""}
               onChange={onTypeMessage}
@@ -88,7 +88,7 @@ const useStyles = makeStyles(({ palette: { background, primary, text }, zIndex, 
   emojiButton: {
     margin: "0 10px",
   },
-  form: {
+  inputContent: {
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -100,5 +100,9 @@ const useStyles = makeStyles(({ palette: { background, primary, text }, zIndex, 
   inputContainer: {
     flexGrow: 1,
     marginRight: -5,
+  },
+  input: {
+    flexGrow: 1,
+    paddingRight: 20,
   },
 }));

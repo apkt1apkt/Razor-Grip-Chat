@@ -5,6 +5,7 @@ import { lazy, Suspense } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 import Appbar from "@web/components/Appbar";
+import BottomPane from "@web/layout/BottomPane";
 import Drawer from "@web/components/Drawer";
 import HomePage from "@web/pages/HomePage";
 import UsersOnline from "@web/components/UsersOnline";
@@ -15,7 +16,6 @@ import { drawerOpenVar, recipientVar } from "@web/reactive";
 const RecentChatsPage = lazy(() => import("@web/pages/RecentChatsPage"));
 const BlockedUsersPage = lazy(() => import("@web/pages/BlockedUsersPage"));
 const ChatPage = lazy(() => import("@web/pages/ChatPage"));
-const BottomPane = lazy(() => import("@web/layout/BottomPane"));
 
 export default function Layout() {
   const classes = useStyles();

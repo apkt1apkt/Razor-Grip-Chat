@@ -64,6 +64,11 @@ export const UserResolver: Resolver.Resolvers<IUser> = {
       }
     },
 
+    amTyping: async (_, { isTyping, recipient }, { authenticate, uid }) => {
+      authenticate();
+      PUBLISH("userIsTyping", { userIsTyping: { _id: uid, isTyping }, recipient });
+    },
+
     blockUser: async (_, { userId }, { authenticate, uid }) => {
       authenticate();
 
@@ -113,6 +118,11 @@ export const UserResolver: Resolver.Resolvers<IUser> = {
       const [payload1, payload2]: IUser[] = _.weConnectStatusChanged || [];
       return payload1?._id === uid || payload2?._id === uid;
     }),
+
+    userIsTyping: SUBSCRIBE("userIsTyping", ({ userIsTyping, recipient }, { userId }, { isAuthenticated, uid }) => {
+      if (!isAuthenticated) return false;
+      return userIsTyping?._id === userId && recipient === uid;
+    }),
   },
 
   User: {
@@ -130,6 +140,7 @@ export const UserTypedef = `
     email: String
     weConnect: Boolean
     blockedByMe: [String]
+    isTyping: Boolean
   }
 
   input UserInput {
@@ -150,10 +161,12 @@ export const UserTypedef = `
     blockUser(userId:String!): [User]
     unblockUser(userId:String!): [User]
     amOnline: User
+    amTyping(isTyping:Boolean! recipient:String!): Boolean
   }
 
   extend type Subscription {
     userOnlineStatusChanged: User  
     weConnectStatusChanged: [User]
+    userIsTyping(userId:String!): User
   }
 `;

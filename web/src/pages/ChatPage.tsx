@@ -20,7 +20,7 @@ export default function ChatPage() {
     <Page
       title={
         <div className={classes.title}>
-          <UserListItem {...recipientData} closeGutter />
+          <UserListItem {...recipientData} closeGutter showLastSeen />
         </div>
       }
     >
