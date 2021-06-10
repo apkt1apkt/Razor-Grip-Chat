@@ -1,7 +1,6 @@
-import data from "emoji-mart/data/twitter.json";
 import "emoji-mart/css/emoji-mart.css";
 import { useState } from "react";
-import { NimblePicker } from "emoji-mart";
+import { Picker } from "emoji-mart";
 import { useReactiveVar } from "@apollo/client";
 
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -28,8 +27,7 @@ export default function EmojiButton(props: EmojiButtonProps) {
             <EmojiIcon />
           </IconButton>
           <div style={{ display: showPicker ? "block" : "none" }}>
-            <NimblePicker
-              data={data as any}
+            <Picker
               set="twitter"
               showSkinTones={false}
               showPreview={false}
